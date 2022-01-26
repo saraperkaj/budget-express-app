@@ -1,48 +1,37 @@
+const { request } = require("express");
 const express = require("express");
-const transArr = require("../models/transaction");
+const transactionArray = require("../models/transactionPlacebo");
 const transactions = express.Router();
 
-const validateURL = (request, respond, next) => {
-  if (
-    request.body.url.substring(0, 7) === "http://" ||
-    request.body.url.substring(0, 8) === "https://"
-  ) {
-    return next(), console.log(request.body.url);
-  } else {
-    respond
-      .status(400)
-      .send(`Oops, you forgot to start your url with http:// or https://`);
-  }
-};
-
-transactions.get("/", (request, respond) => {
-  respond.status(200).json(transArr);
+//get the page route /transactions results in the array
+transactions.get("/", (request, response) => {
+  response.send(transactionArray);
 });
 
-transactions.get("/:index", (request, respond) => {
+//destructing index so necessary to put in
+transactions.get("/:index", (request, response) => {
   const { index } = request.params;
-  if (transArr[index]) {
-    respond.json(transArr[index]);
-  } else {
-    respond.redirect("/404");
-  }
+  transactionArray[index]
+    ? response.json(transactionArray[index])
+    : response.status(404).json({ error: "Page not found" });
 });
 
-transactions.put("/:index", (request, respond) => {
+transactions.delete("/:index", (request, response) => {
+  console.log(`Something was deleted`);
   const { index } = request.params;
-  transArr[index] = request.body;
-  respond.status(200).json(transArr[index]);
+  transactionArray.splice(index, 1);
+  response.json(transactionArray);
 });
 
-transactions.post("/", validateURL, (request, respond) => {
-  const updatedArray = transArr.push(request.body);
-  respond.json(transArr[updatedArray - 1]);
+transactions.post("/", (request, response) => {
+  console.log(`You're posted, hun`);
+  transactionArray.push(request.body);
+  response.status(201).json(transactionArray);
 });
 
-transactions.delete("/:index", (request, respond) => {
+transactions.put("/:index", (request, response) => {
   const { index } = request.params;
-  const deletedTrans = transArr.splice(index, 1);
-  respond.status(200).json(deletedTrans);
+  transactionArray[index] = request.body;
+  response.status(201).json(transactionArray);
 });
-
 module.exports = transactions;
