@@ -7,7 +7,7 @@ const validateURL = (request, respond, next) => {
     request.body.url.substring(0, 7) === "http://" ||
     request.body.url.substring(0, 8) === "https://"
   ) {
-    return next();
+    return next(), console.log(request.body.url);
   } else {
     respond
       .status(400)
@@ -19,19 +19,19 @@ transactions.get("/", (request, respond) => {
   respond.status(200).json(transArr);
 });
 
-transactions.get("/:id", (request, respond) => {
-  const { id } = request.params;
-  if (transArr[id]) {
-    respond.json(transArr[id]);
+transactions.get("/:index", (request, respond) => {
+  const { index } = request.params;
+  if (transArr[index]) {
+    respond.json(transArr[index]);
   } else {
     respond.redirect("/404");
   }
 });
 
-transactions.put("/:id", async (request, respond) => {
-  const { id } = request.params;
-  transArr[id] = request.body;
-  respond.status(200).json(transArr[id]);
+transactions.put("/:index", (request, respond) => {
+  const { index } = request.params;
+  transArr[index] = request.body;
+  respond.status(200).json(transArr[index]);
 });
 
 transactions.post("/", validateURL, (request, respond) => {
@@ -39,10 +39,10 @@ transactions.post("/", validateURL, (request, respond) => {
   respond.json(transArr[updatedArray - 1]);
 });
 
-transactions.delete("/:id", (request, respond) => {
-  const { id } = request.params;
-  const deletedTrans = transArr.splice(id, 1);
-  res.status(200).json(deletedTrans);
+transactions.delete("/:index", (request, respond) => {
+  const { index } = request.params;
+  const deletedTrans = transArr.splice(index, 1);
+  respond.status(200).json(deletedTrans);
 });
 
 module.exports = transactions;
