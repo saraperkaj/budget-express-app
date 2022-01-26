@@ -1,14 +1,11 @@
-const { request } = require("express");
 const express = require("express");
-const transactionArray = require("../models/transactionPlacebo");
+const transactionArray = require("../models/transaction");
 const transactions = express.Router();
 
-//get the page route /transactions results in the array
-transactions.get("/", (request, response) => {
+transactions.get("/", (_, response) => {
   response.send(transactionArray);
 });
 
-//destructing index so necessary to put in
 transactions.get("/:index", (request, response) => {
   const { index } = request.params;
   transactionArray[index]
@@ -34,4 +31,5 @@ transactions.put("/:index", (request, response) => {
   transactionArray[index] = request.body;
   response.status(201).json(transactionArray);
 });
+
 module.exports = transactions;
